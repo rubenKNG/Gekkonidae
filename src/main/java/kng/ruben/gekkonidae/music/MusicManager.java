@@ -11,6 +11,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
+import org.w3c.dom.Text;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class MusicManager {
     public MusicManager(Guild guild) {
         this.guild = guild;
         this.player = audioPlayerManager.createPlayer();
-        this.scheduler = new TrackScheduler();
+        this.scheduler = new TrackScheduler(this.player);
         this.player.addListener(this.scheduler);
         this.guild.getAudioManager().setSendingHandler(new AudioPlayerSendHandler(this.player));
     }
@@ -46,14 +47,13 @@ public class MusicManager {
         open = false;
     }
 
-    public void play(TextChannel channel, String url) {
-        final MusicManager musicManager = getOrDefault(channel.getGuild());
+    public void addToQueue(TextChannel channel, String url) {
+        var musicManager = getOrDefault(channel.getGuild());
 
-        this.audioPlayerManager.loadItemOrdered(musicManager, url, new AudioLoadResultHandler() {
+        audioPlayerManager.loadItemOrdered(musicManager, url, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-                System.out.println(player.startTrack(track,  false));
-                System.out.println(player.getPlayingTrack().getInfo().author);
+                musicManager.scheduler.queue(track);
             }
 
             @Override
@@ -73,17 +73,24 @@ public class MusicManager {
         });
     }
 
+    public void skip() {
+        getOrDefault(this.guild).scheduler.playNextTrack();
+    }
+
 
     public static MusicManager getOrDefault(Guild guild) {
-        return MANAGERS.getOrDefault(guild, new MusicManager(guild));
+        if (MANAGERS.containsKey(guild))
+            return MANAGERS.get(guild);
+
+        var musicManager = new MusicManager(guild);
+
+        MANAGERS.put(guild, musicManager);
+
+        return musicManager;
     }
 
     public boolean isOpen() {
         return open;
-    }
-
-    public AudioPlayerManager getAudioPlayerManager() {
-        return audioPlayerManager;
     }
 
     public Guild getGuild() {

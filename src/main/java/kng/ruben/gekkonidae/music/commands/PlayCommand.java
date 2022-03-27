@@ -22,10 +22,11 @@ public class PlayCommand extends Command {
         var trackUrl = args[0];
 
         var musicManager = MusicManager.getOrDefault(event.getGuild());
+
         if (!musicManager.isOpen())
             musicManager.open(event.getMember().getVoiceState().getChannel());
 
-        musicManager.play(event.getTextChannel(), trackUrl);
+        musicManager.addToQueue(event.getTextChannel(), trackUrl);
 
         return true;
     }

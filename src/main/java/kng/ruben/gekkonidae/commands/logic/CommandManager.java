@@ -6,6 +6,7 @@ import kng.ruben.gekkonidae.commands.PingCommand;
 import kng.ruben.gekkonidae.music.commands.JoinCommand;
 import kng.ruben.gekkonidae.music.commands.LeaveCommand;
 import kng.ruben.gekkonidae.music.commands.PlayCommand;
+import kng.ruben.gekkonidae.music.commands.SkipCommand;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +31,7 @@ public class CommandManager extends ListenerAdapter {
         commands.add(new PingCommand("ping"));
         commands.add(new ChatlogCommand("chatlog"));
         commands.add(new PlayCommand("play"));
+        commands.add(new SkipCommand("skip"));
     }
 
     private void addCommand(Command command) {
