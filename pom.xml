@@ -20,7 +20,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>kng.ruben.gekkonidae.Boot</mainClass>
+                            <mainClass>kng.ruben.gekkonidae.Gekkonidae</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
