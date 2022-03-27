@@ -1,6 +1,11 @@
-package kng.ruben.gekkonidae.commands;
+package kng.ruben.gekkonidae.commands.logic;
 
 import kng.ruben.gekkonidae.Gekkonidae;
+import kng.ruben.gekkonidae.commands.ChatlogCommand;
+import kng.ruben.gekkonidae.commands.PingCommand;
+import kng.ruben.gekkonidae.music.commands.JoinCommand;
+import kng.ruben.gekkonidae.music.commands.LeaveCommand;
+import kng.ruben.gekkonidae.music.commands.PlayCommand;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +25,11 @@ public class CommandManager extends ListenerAdapter {
     }
 
     private void initCommands() {
-       addCommand(new TestCommand("test"));
+        commands.add(new JoinCommand("join"));
+        commands.add(new LeaveCommand("leave"));
+        commands.add(new PingCommand("ping"));
+        commands.add(new ChatlogCommand("chatlog"));
+        commands.add(new PlayCommand("play"));
     }
 
     private void addCommand(Command command) {
@@ -31,14 +40,17 @@ public class CommandManager extends ListenerAdapter {
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         if (event.getAuthor().isBot() || event.isWebhookMessage()) return;
 
-        String[] split = event.getMessage().getContentRaw().replaceFirst(Gekkonidae.COMMAND_PREFIX, "").split("\\s+");
+        var rawMessage = event.getMessage().getContentRaw();
+
+        if (!rawMessage.startsWith(Gekkonidae.COMMAND_PREFIX)) return;
+
+        String[] split = rawMessage.replaceFirst(Gekkonidae.COMMAND_PREFIX, "").split("\\s+");
 
         Command command = getCommand(split[0]);
 
         if (command != null)
             command.execute(event, Arrays.copyOfRange(split, 1, split.length));
     }
-
 
     @Nullable
     private Command getCommand(@NotNull String search) {

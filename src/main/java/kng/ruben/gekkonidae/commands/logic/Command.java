@@ -1,4 +1,4 @@
-package kng.ruben.gekkonidae.commands;
+package kng.ruben.gekkonidae.commands.logic;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -12,7 +12,7 @@ public abstract class Command {
         this.name = name;
     }
 
-    abstract boolean execute(MessageReceivedEvent event, String[] args);
+    protected abstract boolean execute(MessageReceivedEvent event, String[] args);
 
 
      public List<String> getAliases() {
