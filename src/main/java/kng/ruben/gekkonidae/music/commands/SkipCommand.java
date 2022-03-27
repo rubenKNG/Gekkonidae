@@ -20,7 +20,7 @@ public class SkipCommand extends Command {
             return false;
         }
         musicManager.skip();
-        event.getChannel().sendMessage("Skipped track.");
+        event.getChannel().sendMessage("Skipped track.").queue();
 
         return true;
     }

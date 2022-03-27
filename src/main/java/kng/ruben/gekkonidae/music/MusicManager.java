@@ -11,8 +11,9 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
-import org.w3c.dom.Text;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +30,7 @@ public class MusicManager {
         AudioSourceManagers.registerRemoteSources(audioPlayerManager);
     }
 
-    public MusicManager(Guild guild) {
+    public MusicManager(@NotNull Guild guild) {
         this.guild = guild;
         this.player = audioPlayerManager.createPlayer();
         this.scheduler = new TrackScheduler(this.player);
@@ -47,28 +48,30 @@ public class MusicManager {
         open = false;
     }
 
-    public void addToQueue(TextChannel channel, String url) {
-        var musicManager = getOrDefault(channel.getGuild());
+    public void addToQueue(@NotNull TextChannel channel, @NotNull String url) {
+        var musicManager = getOrDefault(guild);
 
         audioPlayerManager.loadItemOrdered(musicManager, url, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
                 musicManager.scheduler.queue(track);
+                channel.sendMessage("The song has successfully been added to the queue").queue();
             }
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
-                //TODO: Handle playlist
+                playlist.getTracks().forEach(musicManager.scheduler::queue);
+                channel.sendMessage("Tracks from playlist has been added to the queue.").queue();
             }
 
             @Override
             public void noMatches() {
-                System.out.println("no matches");
+                channel.sendMessage("There were nothing found.").queue();
             }
 
             @Override
             public void loadFailed(FriendlyException exception) {
-                System.out.println("load failed");
+                channel.sendMessage("Something went wrong loading this song. Try again later.").queue();
             }
         });
     }
@@ -77,10 +80,13 @@ public class MusicManager {
         getOrDefault(this.guild).scheduler.playNextTrack();
     }
 
+    public ArrayList<AudioTrack> getQueue() {
+        return new ArrayList<>(this.scheduler.getQueue());
+    }
 
-    public static MusicManager getOrDefault(Guild guild) {
-        if (MANAGERS.containsKey(guild))
-            return MANAGERS.get(guild);
+
+    public static MusicManager getOrDefault(@NotNull Guild guild) {
+        if (MANAGERS.containsKey(guild)) return MANAGERS.get(guild);
 
         var musicManager = new MusicManager(guild);
 
