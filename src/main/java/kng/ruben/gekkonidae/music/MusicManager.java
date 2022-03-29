@@ -8,6 +8,7 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -84,6 +85,9 @@ public class MusicManager {
         return new ArrayList<>(this.scheduler.getQueue());
     }
 
+    public AudioTrack getCurrentTrack() {
+        return player.getPlayingTrack();
+    }
 
     public static MusicManager getOrDefault(@NotNull Guild guild) {
         if (MANAGERS.containsKey(guild)) return MANAGERS.get(guild);
@@ -102,4 +106,5 @@ public class MusicManager {
     public Guild getGuild() {
         return guild;
     }
+
 }

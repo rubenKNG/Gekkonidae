@@ -30,6 +30,7 @@ public class CommandManager extends ListenerAdapter {
         commands.add(new PlayCommand("play"));
         commands.add(new SkipCommand("skip"));
         commands.add(new QueueCommand("queue"));
+        commands.add(new TrackinfoCommand("trackinfo"));
     }
 
     private void addCommand(Command command) {
